@@ -3,190 +3,186 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>泰文字母練習 — 單檔版</title>
+  <title>泰文字母練習 — 學習拼音版</title>
   <style>
-    :root { --radius: 16px; }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, "Noto Sans Thai", Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      color: #0f172a; background: linear-gradient(135deg, #f0f9ff, #ffffff 40%, #ecfdf5);
-      min-height: 100vh; display: grid; place-items: start center;
-    }
-    .container { max-width: 900px; width: 100%; padding: 24px 16px 40px; }
-    header { display: grid; gap: 8px; margin-bottom: 16px; }
-    h1 { margin: 0; font-size: 28px; }
-    .hint { color: #475569; font-size: 13px; }
-    .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-start; align-items: center; }
-    select, button {
-      border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
-      cursor: pointer; font-size: 14px;
-    }
-    button.primary { background: #059669; color: #fff; border-color: #059669; }
-    button:hover { filter: brightness(0.98); }
-
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 20px; }
-    .stat { background: #fff; border: 1px solid #e5e7eb; border-radius: var(--radius); padding: 14px; text-align: center; box-shadow: 0 2px 8px rgb(0 0 0 / 6%); }
-    .stat .label { color: #64748b; font-size: 12px; }
-    .stat .value { font-weight: 700; font-size: 22px; margin-top: 4px; }
-
-    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: var(--radius); padding: 24px; box-shadow: 0 6px 24px rgb(0 0 0 / 8%); }
-    .prompt { font-size: clamp(72px, 14vw, 140px); line-height: 1; text-align: center; margin: 8px 0 18px; user-select: none; font-family: "Sarabun", "Noto Sans Thai", Arial, sans-serif; }
-
-    .options { display: grid; grid-template-columns: 1fr; gap: 10px; }
-    @media (min-width: 600px) { .options { grid-template-columns: 1fr 1fr; } }
-    .opt { text-align: left; border: 1px solid #e5e7eb; border-radius: 14px; padding: 12px 14px; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / 7%); display: flex; align-items: center; justify-content: space-between; }
-    .opt:hover { background: #f9fafb; }
-    .opt.bad { border-color: #fca5a5; background: #fef2f2; }
-    .opt.good { border-color: #86efac; background: #ecfdf5; }
-
-    .feedback { min-height: 28px; display: grid; place-items: center; margin-top: 6px; font-weight: 700; }
-    .ok { color: #047857; } .ng { color: #dc2626; }
-
-    .actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
-
-    .note { color: #64748b; font-size: 12px; margin-top: 14px; }
+    body { font-family: system-ui, Noto Sans Thai, Arial, sans-serif; background: #f8fafc; margin:0; padding:20px; color:#0f172a; }
+    h1 { font-size:24px; margin-bottom:8px; }
+    .hint { font-size:13px; color:#475569; margin-bottom:12px; }
+    .controls, .audio { margin:10px 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    select, button { padding:6px 10px; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; }
+    .stats { display:flex; gap:10px; margin:12px 0; }
+    .stat { flex:1; background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:10px; text-align:center; }
+    .prompt { font-size:100px; text-align:center; margin:20px 0; user-select:none; }
+    .options { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .opt { padding:10px; border-radius:10px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; text-align:left; }
+    .opt.good { background:#ecfdf5; border-color:#34d399; }
+    .opt.bad { background:#fef2f2; border-color:#fca5a5; }
+    .feedback { height:24px; text-align:center; font-weight:bold; margin-top:10px; }
+    .ok { color:#059669; } .ng { color:#dc2626; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>泰文字母練習（單檔版）</h1>
-      <div class="hint">題目為泰文；下方有 4 個 RTGS 羅馬拼音選項。支援鍵盤 <strong>1–4</strong> 作答。</div>
-      <div class="controls">
-        <label>
-          題庫：
-          <select id="mode">
-            <option value="consonants">僅子音</option>
-            <option value="vowels">僅母音</option>
-            <option value="all">全部</option>
-          </select>
-        </label>
-        <button id="reset">重置成績</button>
-      </div>
-    </header>
+  <h1>泰文字母練習（學習拼音版）</h1>
+  <div class="hint">題目為泰文；下方有 4 個 <strong>學習拼音</strong> 選項，支援鍵盤 1–4 作答。</div>
 
-    <section class="stats">
-      <div class="stat"><div class="label">答對題數</div><div class="value" id="sc-correct">0</div></div>
-      <div class="stat"><div class="label">作答次數</div><div class="value" id="sc-total">0</div></div>
-      <div class="stat"><div class="label">正確率</div><div class="value" id="sc-acc">0%</div></div>
-    </section>
-
-    <section class="card">
-      <div class="prompt" id="prompt">ก</div>
-      <div class="options" id="options"></div>
-      <div class="feedback" id="fb"></div>
-      <div class="actions">
-        <button class="primary" id="next">下一題</button>
-        <button id="reshuffle">重新抽題</button>
-      </div>
-      <div class="note">備註：羅馬拼音採 RTGS。部分符號（如「อ」）在單字中可能為無聲的母音承載符，這裡以常見讀音簡化。</div>
-    </section>
+  <div class="controls">
+    題庫：
+    <select id="mode">
+      <option value="consonants">僅子音</option>
+      <option value="vowels">僅母音</option>
+      <option value="all">全部</option>
+    </select>
+    <button id="reset">重置成績</button>
   </div>
 
-  <script>
-    // ---------------- Data ----------------
-    const CONSONANTS = [
-      { ch: "ก", rtgs: "k" }, { ch: "ข", rtgs: "kh" }, { ch: "ฃ", rtgs: "kh" }, { ch: "ค", rtgs: "kh" },
-      { ch: "ฅ", rtgs: "kh" }, { ch: "ฆ", rtgs: "kh" }, { ch: "ง", rtgs: "ng" }, { ch: "จ", rtgs: "ch" },
-      { ch: "ฉ", rtgs: "ch" }, { ch: "ช", rtgs: "ch" }, { ch: "ซ", rtgs: "s" }, { ch: "ฌ", rtgs: "ch" },
-      { ch: "ญ", rtgs: "y" }, { ch: "ฎ", rtgs: "d" }, { ch: "ฏ", rtgs: "t" }, { ch: "ฐ", rtgs: "th" },
-      { ch: "ฑ", rtgs: "th" }, { ch: "ฒ", rtgs: "th" }, { ch: "ณ", rtgs: "n" }, { ch: "ด", rtgs: "d" },
-      { ch: "ต", rtgs: "t" }, { ch: "ถ", rtgs: "th" }, { ch: "ท", rtgs: "th" }, { ch: "ธ", rtgs: "th" },
-      { ch: "น", rtgs: "n" }, { ch: "บ", rtgs: "b" }, { ch: "ป", rtgs: "p" }, { ch: "ผ", rtgs: "ph" },
-      { ch: "ฝ", rtgs: "f" }, { ch: "พ", rtgs: "ph" }, { ch: "ฟ", rtgs: "f" }, { ch: "ภ", rtgs: "ph" },
-      { ch: "ม", rtgs: "m" }, { ch: "ย", rtgs: "y" }, { ch: "ร", rtgs: "r" }, { ch: "ล", rtgs: "l" },
-      { ch: "ว", rtgs: "w" }, { ch: "ศ", rtgs: "s" }, { ch: "ษ", rtgs: "s" }, { ch: "ส", rtgs: "s" },
-      { ch: "ห", rtgs: "h" }, { ch: "ฬ", rtgs: "l" }, { ch: "อ", rtgs: "o" }, { ch: "ฮ", rtgs: "h" },
-    ];
+  <div class="stats">
+    <div class="stat"><div>答對題數</div><div id="sc-correct">0</div></div>
+    <div class="stat"><div>作答次數</div><div id="sc-total">0</div></div>
+    <div class="stat"><div>正確率</div><div id="sc-acc">0%</div></div>
+  </div>
 
-    const VOWELS = [
-      { ch: "ะ", rtgs: "a" }, { ch: "า", rtgs: "a" }, { ch: "ิ", rtgs: "i" }, { ch: "ี", rtgs: "i" },
-      { ch: "ึ", rtgs: "ue" }, { ch: "ื", rtgs: "ue" }, { ch: "ุ", rtgs: "u" }, { ch: "ู", rtgs: "u" },
-      { ch: "เ", rtgs: "e" }, { ch: "แ", rtgs: "ae" }, { ch: "โ", rtgs: "o" }, { ch: "ใ", rtgs: "ai" },
-      { ch: "ไ", rtgs: "ai" }, { ch: "ำ", rtgs: "am" },
-    ];
+  <div class="prompt" id="prompt">ก</div>
+  <div class="audio">
+    <button id="speak">🔊 發音</button>
+    <button id="testVoice">🧪 測試音頻（當前字母）</button>
+    <label><input type="checkbox" id="autoplay" /> 自動播放</label>
+  </div>
 
-    const fallbackRoman = ["k","kh","ng","ch","s","y","d","t","th","n","b","p","ph","f","m","r","l","w","h","o","e","ae","ai","am","u","i","ue"];
+  <div class="options" id="options"></div>
+  <div class="feedback" id="fb"></div>
+  <div class="controls">
+    <button id="next">下一題</button>
+    <button id="reshuffle">重新抽題</button>
+  </div>
+  <div class="hint">備註：本頁使用「學習拼音（教學用）」，例如 ก→g、จ→j、ต→dt、ป→bp。若要啟用發音，請將 MP3 置於 <code>sounds/</code> 資料夾，檔名以泰文字母命名，如 <code>sounds/ก.mp3</code>、<code>sounds/ะ.mp3</code>。</div>
 
-    // -------------- Utils --------------
-    const $ = (q) => document.querySelector(q);
-    function sample(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-    function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
-    function buildPool(mode){ if(mode==='consonants') return CONSONANTS; if(mode==='vowels') return VOWELS; return [...CONSONANTS, ...VOWELS]; }
+<script>
+// Safer init: wait for DOM ready before wiring buttons
+window.addEventListener('DOMContentLoaded', () => {
+  // ===== Data =====
+  const CONSONANTS = [
+    { ch: "ก", rtgs: "g" }, { ch: "ข", rtgs: "kh" }, { ch: "ค", rtgs: "kh" },
+    { ch: "ง", rtgs: "ng" }, { ch: "จ", rtgs: "j" }, { ch: "ช", rtgs: "ch" },
+    { ch: "ซ", rtgs: "s" }, { ch: "ญ", rtgs: "y" }, { ch: "ด", rtgs: "d" },
+    { ch: "ต", rtgs: "dt" }, { ch: "ถ", rtgs: "th" }, { ch: "ท", rtgs: "th" },
+    { ch: "น", rtgs: "n" }, { ch: "บ", rtgs: "b" }, { ch: "ป", rtgs: "bp" },
+    { ch: "ผ", rtgs: "ph" }, { ch: "ฝ", rtgs: "f" }, { ch: "พ", rtgs: "ph" },
+    { ch: "ฟ", rtgs: "f" }, { ch: "ม", rtgs: "m" }, { ch: "ย", rtgs: "y" },
+    { ch: "ร", rtgs: "r" }, { ch: "ล", rtgs: "l" }, { ch: "ว", rtgs: "w" },
+    { ch: "ส", rtgs: "s" }, { ch: "ห", rtgs: "h" }, { ch: "อ", rtgs: "o" }, { ch: "ฮ", rtgs: "h" }
+  ];
+  const VOWELS = [
+    { ch: "ะ", rtgs: "a" }, { ch: "า", rtgs: "aa" }, { ch: "ิ", rtgs: "i" }, { ch: "ี", rtgs: "ii" },
+    { ch: "ุ", rtgs: "u" }, { ch: "ู", rtgs: "uu" }, { ch: "เ", rtgs: "e" }, { ch: "แ", rtgs: "ae" },
+    { ch: "โ", rtgs: "o" }, { ch: "ใ", rtgs: "ai" }, { ch: "ไ", rtgs: "ai" }, { ch: "ำ", rtgs: "am" }
+  ];
+  const fallbackRoman = ["g","k","kh","ng","j","ch","s","y","d","dt","th","n","b","bp","ph","f","m","r","l","w","h","o","e","ae","ai","am","u","uu","i","ii"];
 
-    function buildQuestion(pool){
-      const answer = sample(pool);
-      const uniq = Array.from(new Set(pool.map(x=>x.rtgs)));
-      const distractible = uniq.filter(r=>r!==answer.rtgs);
-      const distractors = [];
-      while(distractors.length<3 && distractible.length>0){ const r = sample(distribleSafe()); if(!distractors.includes(r)) distractors.push(r); }
-      function distribleSafe(){ return distractible.length? distractible : fallbackRoman; }
-      for(const f of shuffle(fallbackRoman)){
-        if(distractors.length>=3) break; if(f!==answer.rtgs && !distractors.includes(f)) distractors.push(f);
-      }
-      const options = shuffle([answer.rtgs, ...distractors]).slice(0,4);
-      return { prompt: answer.ch, answer: answer.rtgs, options };
-    }
+  // ===== Utils =====
+  const $ = (q) => document.querySelector(q);
+  function sample(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+  function buildPool(mode){ if(mode==='consonants') return CONSONANTS; if(mode==='vowels') return VOWELS; return [...CONSONANTS, ...VOWELS]; }
+  function buildQuestion(pool){
+    const answer = sample(pool);
+    const uniq = Array.from(new Set(pool.map(x=>x.rtgs)));
+    const distractible = uniq.filter(r=>r!==answer.rtgs);
+    const distractors=[];
+    while(distractors.length<3 && distractible.length>0){ const r=sample(distractible); if(!distractors.includes(r)) distractors.push(r);} 
+    for(const f of shuffle(fallbackRoman)){ if(distractors.length>=3) break; if(f!==answer.rtgs && !distractors.includes(f)) distractors.push(f);} 
+    const options=shuffle([answer.rtgs,...distractors]).slice(0,4);
+    return {prompt:answer.ch, answer:answer.rtgs, options};
+  }
 
-    // -------------- State --------------
-    let modeSel = $('#mode');
-    let promptEl = $('#prompt');
-    let optsEl = $('#options');
-    let fbEl = $('#fb');
-    let scCorrectEl = $('#sc-correct');
-    let scTotalEl = $('#sc-total');
-    let scAccEl = $('#sc-acc');
-
-    let correct=0, total=0, q=null, selected=null, feedback='none';
-
-    function updateStats(){
-      scCorrectEl.textContent = String(correct);
-      scTotalEl.textContent = String(total);
-      scAccEl.textContent = total===0? '0%' : Math.round(correct/total*100)+'%';
-    }
-
-    function renderQuestion(){
-      const pool = buildPool(modeSel.value);
-      q = buildQuestion(pool);
-      selected=null; feedback='none';
-      promptEl.textContent = q.prompt;
-      fbEl.innerHTML = '';
-      optsEl.innerHTML = '';
-      q.options.forEach((opt, i)=>{
-        const btn = document.createElement('button');
-        btn.className = 'opt';
-        btn.innerHTML = `<span><span style="color:#9ca3af;margin-right:6px">${i+1}.</span>${opt}</span><span class="mark"></span>`;
-        btn.addEventListener('click', ()=> choose(opt, btn));
-        optsEl.appendChild(btn);
-      });
-    }
-
-    function choose(opt, btn){
-      if (feedback==='right') return; // already correct
-      selected = opt; total++;
-      if (opt===q.answer){ correct++; feedback='right'; fbEl.innerHTML = `<span class="ok">答對！（${q.prompt} → ${q.answer}）</span>`; btn.classList.add('good'); }
-      else { feedback='wrong'; fbEl.innerHTML = `<span class="ng">答錯，再試一次</span>`; btn.classList.add('bad'); }
-      updateStats();
-    }
-
-    // -------------- Events --------------
-    $('#next').addEventListener('click', renderQuestion);
-    $('#reshuffle').addEventListener('click', renderQuestion);
-    $('#reset').addEventListener('click', ()=>{ correct=0; total=0; updateStats(); renderQuestion(); });
-    modeSel.addEventListener('change', renderQuestion);
-
-    // Keyboard 1-4
-    window.addEventListener('keydown', (e)=>{
-      const idx = parseInt(e.key,10);
-      if(!isNaN(idx) && idx>=1 && idx<=4){
-        const btn = optsEl.children[idx-1];
-        if(btn) btn.click();
-      }
+  // ===== Audio (MP3) =====
+  const player = new Audio();
+  player.preload = 'auto';
+  function playAudio(ch){
+    if(!ch) return;
+    try { player.pause(); player.currentTime = 0; } catch(e){}
+    player.src = `sounds/${encodeURIComponent(ch)}.mp3`;
+    player.play().catch(err => {
+      console.debug('[audio] cannot play', ch, err);
     });
+  }
 
-    // init
+  // ===== Elements =====
+  const modeSel = $('#mode');
+  const promptEl = $('#prompt');
+  const optsEl = $('#options');
+  const fbEl = $('#fb');
+  const scCorrectEl = $('#sc-correct');
+  const scTotalEl = $('#sc-total');
+  const scAccEl = $('#sc-acc');
+  const btnSpeak = $('#speak');
+  const btnTest = $('#testVoice');
+  const btnNext = $('#next');
+  const btnReshuffle = $('#reshuffle');
+  const btnReset = $('#reset');
+  const autoPlayEl = $('#autoplay');
+
+  if(!modeSel || !promptEl || !optsEl){
+    console.error('Init failed: DOM elements not found');
+    return;
+  }
+
+  // ===== State =====
+  let correct=0,total=0,q=null,feedback='none';
+  function updateStats(){ scCorrectEl && (scCorrectEl.textContent=String(correct)); scTotalEl && (scTotalEl.textContent=String(total)); scAccEl && (scAccEl.textContent= total? Math.round(correct/total*100)+'%':'0%'); }
+
+  function renderQuestion(){
+    const pool=buildPool(modeSel.value);
+    q=buildQuestion(pool);
+    feedback='none';
+    promptEl.textContent=q.prompt;
+    fbEl && (fbEl.textContent='');
+    if(autoPlayEl && autoPlayEl.checked){ playAudio(q.prompt); }
+    optsEl.innerHTML='';
+    q.options.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.className='opt';
+      btn.innerHTML=`<span><span style="color:#9ca3af;margin-right:6px">${i+1}.</span>${opt}</span>`;
+      btn.addEventListener('click', ()=> choose(opt, btn));
+      optsEl.appendChild(btn);
+    });
+  }
+
+  function choose(opt, btn){
+    if(!q) return;
+    if(feedback==='right') return;
+    total++;
+    if(opt===q.answer){
+      correct++; feedback='right';
+      if(fbEl) fbEl.innerHTML = `<span class="ok">答對！（${q.prompt} → ${q.answer}）</span>`;
+      btn.classList.add('good');
+      playAudio(q.prompt);
+    } else {
+      feedback='wrong';
+      if(fbEl) fbEl.innerHTML = '<span class="ng">答錯，再試一次</span>';
+      btn.classList.add('bad');
+    }
     updateStats();
-    renderQuestion();
-  </script>
+  }
+
+  // ===== Events =====
+  btnSpeak && btnSpeak.addEventListener('click', ()=> q && playAudio(q.prompt));
+  btnTest && btnTest.addEventListener('click', ()=> q && playAudio(q.prompt));
+  btnNext && btnNext.addEventListener('click', renderQuestion);
+  btnReshuffle && btnReshuffle.addEventListener('click', renderQuestion);
+  btnReset && btnReset.addEventListener('click', ()=>{ correct=0; total=0; updateStats(); renderQuestion(); });
+  modeSel.addEventListener('change', renderQuestion);
+
+  window.addEventListener('keydown', (e)=>{
+    const idx = parseInt(e.key,10);
+    if(!isNaN(idx) && idx>=1 && idx<=4){
+      const btn = optsEl.children[idx-1];
+      if(btn) btn.dispatchEvent(new Event('click'));
+    }
+  });
+
+  updateStats();
+  renderQuestion();
+});
+</script>
 </body>
 </html>
