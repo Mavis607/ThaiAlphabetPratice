@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -47,7 +48,7 @@
   </div>
 
   <div class="prompt" id="prompt">ก</div>
-
+  <div id="example" style="text-align:center; font-size:16px; color:#1d4ed8; margin-top:-10px; margin-bottom:10px;"></div>
   <div class="options" id="options"></div>
   <div class="feedback" id="fb"></div>
   <div class="controls">
@@ -107,6 +108,51 @@ window.addEventListener('DOMContentLoaded', () => {
   ];
 
   const fallbackRoman = ["g","k","ng","j","ch","s","y","d","dt","t","n","b","bp","p","f","m","r","l","w","h","o","e","ae","ai","am","u","uu","i","ii","ue","uee","ia","uea","ua","ao"];
+// ===== Examples =====
+const EXAMPLES = {
+  "ก": "ไก่ (雞)",
+  "ข": "ไข่ (蛋)",
+  "ค": "ควาย (水牛)",
+  "ฆ": "ระฆัง (鐘)",
+  "ง": "งู (蛇)",
+  "จ": "จาน (盤子)",
+  "ฉ": "ฉิ่ง (鈸)",
+  "ช": "ช้าง (大象)",
+  "ซ": "โซ่ (鎖鏈)",
+  "ฌ": "เฌอ (樹)",
+  "ญ": "หญิง (女人)",
+  "ฎ": "ชฎา (高冠帽)",
+  "ฏ": "ปฏัก (長矛)",
+  "ฐ": "ฐาน (基座)",
+  "ฑ": "มณโฑ (摩登夫人/古代女性名)",
+  "ฒ": "ผู้เฒ่า (老人)",
+  "ณ": "เณร (小沙彌)",
+  "ด": "เด็ก (小孩)",
+  "ต": "เต่า (烏龜)",
+  "ถ": "ถุง (袋子)",
+  "ท": "ทหาร (士兵)",
+  "ธ": "ธง (旗子)",
+  "น": "หนู (老鼠)",
+  "บ": "ใบไม้ (樹葉)",
+  "ป": "ปลา (魚)",
+  "ผ": "ผึ้ง (蜜蜂)",
+  "ฝ": "ฝา (蓋子)",
+  "พ": "พาน (供盤)",
+  "ฟ": "ฟัน (牙齒)",
+  "ภ": "สำเภา (帆船)",
+  "ม": "ม้า (馬)",
+  "ย": "ยักษ์ (巨人)",
+  "ร": "เรือ (船)",
+  "ล": "ลิง (猴子)",
+  "ว": "แหวน (戒指)",
+  "ศ": "ศาลา (涼亭)",
+  "ษ": "ฤๅษี (隱士)",
+  "ส": "เสือ (老虎)",
+  "ห": "หีบ (箱子)",
+  "ฬ": "จุฬา (風箏)",
+  "อ": "อ่าง (盆子)",
+  "ฮ": "นกฮูก (貓頭鷹)"
+};
 
   // ===== Utils =====
   const $ = (q) => document.querySelector(q);
@@ -128,13 +174,29 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===== Audio =====
- const player = new Audio();
-  function playAudio(ch){
-   if(!ch) return;
-   try { player.pause(); player.currentTime = 0; } catch(e){}
-    player.src = `sounds/${encodeURIComponent(ch)}.mp3`;
-    player.play().catch(()=>{});
-  }
+    const player = new Audio();
+    function playAudio(ch){
+      if(!ch) return;
+      try { player.pause(); player.currentTime = 0; } catch(e){}
+      player.src = `sounds/${encodeURIComponent(ch)}.mp3`;
+      player.play().catch(()=>{});
+    }
+    function playWord(word, fallbackCh){
+      if(!word && !fallbackCh) return;
+      try { player.pause(); player.currentTime = 0; } catch(e){}
+      if(word){
+        player.src = `sounds/examples/${encodeURIComponent(word)}.mp3`;
+        player.play().catch(()=>{
+          if(fallbackCh){
+            player.src = `sounds/${encodeURIComponent(fallbackCh)}.mp3`;
+            player.play().catch(()=>{});
+          }
+        });
+      } else if(fallbackCh){
+        player.src = `sounds/${encodeURIComponent(fallbackCh)}.mp3`;
+        player.play().catch(()=>{});
+      }
+    }
 
   // ===== Elements =====
   const modeSel = $('#mode');
@@ -162,6 +224,7 @@ window.addEventListener('DOMContentLoaded', () => {
     fbEl.textContent='';
     //if(autoPlayEl.checked){ playAudio(q.prompt); }
     optsEl.innerHTML='';
+    document.getElementById('example').textContent = "";
     q.options.forEach((opt,i)=>{
       const btn=document.createElement('button');
       btn.className='opt';
@@ -177,10 +240,22 @@ window.addEventListener('DOMContentLoaded', () => {
     total++;
     if(opt===q.answer){
       correct++; feedback='right';
-      fbEl.innerHTML = `<span class=\"ok\">答對！（${q.prompt} → ${q.answer}）</span>`;
+      fbEl.innerHTML = `<span class="ok">答對！（${q.prompt} → ${q.answer}）</span>`;
       btn.classList.add('good');
       playAudio(q.prompt);
-    } else {
+
+      // 顯示例字 + 播放按鈕
+      const exBox = document.getElementById('example');
+      const ex = EXAMPLES[q.prompt] || "";
+      if(ex){
+        const wordOnly = ex.split(" ")[0]; // 取泰文字
+        exBox.innerHTML = `例字：${ex} <button id="playEx" style="margin-left:6px; padding:2px 6px; font-size:12px; border:1px solid #cbd5e1; border-radius:6px; cursor:pointer; background:#fff;">🔈</button>`;
+        const p = document.getElementById('playEx');
+        if(p){ p.addEventListener('click', ()=> playWord(wordOnly, q.prompt)); }
+      } else {
+        exBox.textContent = "";
+      }
+    }else {
       feedback='wrong';
       fbEl.innerHTML = '<span class=\"ng\">答錯，再試一次</span>';
       btn.classList.add('bad');
