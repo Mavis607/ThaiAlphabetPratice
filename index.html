@@ -32,6 +32,11 @@
       <option value="vowels">僅母音</option>
       <option value="all">全部</option>
     </select>
+    等級：
+    <select id="level">
+      <option value="basic">基礎（29子音+12母音）</option>
+      <option value="full">完整（44子音+18母音）</option>
+    </select>
     <button id="reset">重置成績</button>
   </div>
 
@@ -54,14 +59,13 @@
     <button id="next">下一題</button>
     <button id="reshuffle">重新抽題</button>
   </div>
-  <div class="hint">備註：本頁使用「學習拼音（教學用）」，例如 ก→g、จ→j、ต→dt、ป→bp。若要啟用發音，請將 MP3 置於 <code>sounds/</code> 資料夾，檔名以泰文字母命名，如 <code>sounds/ก.mp3</code>、<code>sounds/ะ.mp3</code>。</div>
+  <div class="hint">備註：<br>基礎模式：常用 29 子音 + 12 母音。<br>完整模式：標準 44 子音 + 18 母音。<br>若要啟用發音，請將 MP3 置於 <code>sounds/</code> 資料夾，檔名以泰文字母命名。</div>
 
 <script>
-// Safer init: wait for DOM ready before wiring buttons
 window.addEventListener('DOMContentLoaded', () => {
   // ===== Data =====
-  const CONSONANTS = [
-    { ch: "ก", rtgs: "g" }, { ch: "ข", rtgs: "kh" }, { ch: "ค", rtgs: "kh" },
+  const BASIC_CONSONANTS = [
+    { ch: "ก", rtgs: "g" }, { ch: "ข", rtgs: "k" }, { ch: "ค", rtgs: "k" },
     { ch: "ง", rtgs: "ng" }, { ch: "จ", rtgs: "j" }, { ch: "ช", rtgs: "ch" },
     { ch: "ซ", rtgs: "s" }, { ch: "ญ", rtgs: "y" }, { ch: "ด", rtgs: "d" },
     { ch: "ต", rtgs: "dt" }, { ch: "ถ", rtgs: "th" }, { ch: "ท", rtgs: "th" },
@@ -71,18 +75,52 @@ window.addEventListener('DOMContentLoaded', () => {
     { ch: "ร", rtgs: "r" }, { ch: "ล", rtgs: "l" }, { ch: "ว", rtgs: "w" },
     { ch: "ส", rtgs: "s" }, { ch: "ห", rtgs: "h" }, { ch: "อ", rtgs: "o" }, { ch: "ฮ", rtgs: "h" }
   ];
-  const VOWELS = [
+  const BASIC_VOWELS = [
     { ch: "ะ", rtgs: "a" }, { ch: "า", rtgs: "aa" }, { ch: "ิ", rtgs: "i" }, { ch: "ี", rtgs: "ii" },
     { ch: "ุ", rtgs: "u" }, { ch: "ู", rtgs: "uu" }, { ch: "เ", rtgs: "e" }, { ch: "แ", rtgs: "ae" },
     { ch: "โ", rtgs: "o" }, { ch: "ใ", rtgs: "ai" }, { ch: "ไ", rtgs: "ai" }, { ch: "ำ", rtgs: "am" }
   ];
-  const fallbackRoman = ["g","k","kh","ng","j","ch","s","y","d","dt","th","n","b","bp","ph","f","m","r","l","w","h","o","e","ae","ai","am","u","uu","i","ii"];
+
+  const FULL_CONSONANTS = [
+    { ch: "ก", rtgs: "g" },   { ch: "ข", rtgs: "k" },
+    { ch: "ค", rtgs: "k" },  { ch: "ฆ", rtgs: "k" },
+    { ch: "ง", rtgs: "ng" },  { ch: "จ", rtgs: "j" },   { ch: "ฉ", rtgs: "ch" },
+    { ch: "ช", rtgs: "ch" },  { ch: "ซ", rtgs: "s" },   { ch: "ฌ", rtgs: "ch" },
+    { ch: "ญ", rtgs: "y" },   { ch: "ฎ", rtgs: "d" },   { ch: "ฏ", rtgs: "dt" },
+    { ch: "ฐ", rtgs: "t" },  { ch: "ฑ", rtgs: "t" },  { ch: "ฒ", rtgs: "t" },
+    { ch: "ณ", rtgs: "n" },   { ch: "ด", rtgs: "d" },   { ch: "ต", rtgs: "dt" },
+    { ch: "ถ", rtgs: "t" },  { ch: "ท", rtgs: "t" },  { ch: "ธ", rtgs: "t" },
+    { ch: "น", rtgs: "n" },   { ch: "บ", rtgs: "b" },   { ch: "ป", rtgs: "bp" },
+    { ch: "ผ", rtgs: "p" },  { ch: "ฝ", rtgs: "f" },   { ch: "พ", rtgs: "p" },
+    { ch: "ฟ", rtgs: "f" },   { ch: "ภ", rtgs: "p" },  { ch: "ม", rtgs: "m" },
+    { ch: "ย", rtgs: "y" },   { ch: "ร", rtgs: "r" },   { ch: "ล", rtgs: "l" },
+    { ch: "ว", rtgs: "w" },   { ch: "ศ", rtgs: "s" },   { ch: "ษ", rtgs: "s" },
+    { ch: "ส", rtgs: "s" },   { ch: "ห", rtgs: "h" },   { ch: "ฬ", rtgs: "l" },
+    { ch: "อ", rtgs: "o" },   { ch: "ฮ", rtgs: "h" }
+  ];
+
+  const FULL_VOWELS = [
+    { ch: "ะ", rtgs: "a" },   { ch: "า", rtgs: "aa" },
+    { ch: "ิ", rtgs: "i" },   { ch: "ี", rtgs: "ii" },
+    { ch: "ึ", rtgs: "ue" },  { ch: "ื", rtgs: "uee" },
+    { ch: "ุ", rtgs: "u" },   { ch: "ู", rtgs: "uu" },
+    { ch: "เ", rtgs: "e" },   { ch: "โ", rtgs: "o" },
+    { ch: "แ", rtgs: "ae" },  { ch: "ไ", rtgs: "ai" },
+    { ch: "ใ", rtgs: "ai" },  { ch: "ำ", rtgs: "am" },
+    { ch: "เอีย", rtgs: "ia" }, { ch: "เอือ", rtgs: "uea" },
+    { ch: "อัว", rtgs: "ua" },  { ch: "เอา", rtgs: "ao" }
+  ];
+
+  const fallbackRoman = ["g","k","ng","j","ch","s","y","d","dt","t","n","b","bp","p","f","m","r","l","w","h","o","e","ae","ai","am","u","uu","i","ii","ue","uee","ia","uea","ua","ao"];
 
   // ===== Utils =====
   const $ = (q) => document.querySelector(q);
   function sample(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
   function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
-  function buildPool(mode){ if(mode==='consonants') return CONSONANTS; if(mode==='vowels') return VOWELS; return [...CONSONANTS, ...VOWELS]; }
+  function getData(level){
+    return level==='full' ? {C:FULL_CONSONANTS, V:FULL_VOWELS} : {C:BASIC_CONSONANTS, V:BASIC_VOWELS};
+  }
+  function buildPool(mode, level){ const {C,V}=getData(level); if(mode==='consonants') return C; if(mode==='vowels') return V; return [...C, ...V]; }
   function buildQuestion(pool){
     const answer = sample(pool);
     const uniq = Array.from(new Set(pool.map(x=>x.rtgs)));
@@ -94,20 +132,20 @@ window.addEventListener('DOMContentLoaded', () => {
     return {prompt:answer.ch, answer:answer.rtgs, options};
   }
 
-  // ===== Audio (MP3) =====
+  // ===== Audio =====
   const player = new Audio();
   player.preload = 'auto';
   function playAudio(ch){
     if(!ch) return;
     try { player.pause(); player.currentTime = 0; } catch(e){}
     player.src = `sounds/${encodeURIComponent(ch)}.mp3`;
-    player.play().catch(err => {
-      console.debug('[audio] cannot play', ch, err);
-    });
+    player.play().catch(()=>{});
   }
 
   // ===== Elements =====
   const modeSel = $('#mode');
+  const datasetSel = $('#dataset');
+  const levelSel = $('#level');
   const promptEl = $('#prompt');
   const optsEl = $('#options');
   const fbEl = $('#fb');
@@ -121,27 +159,21 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnReset = $('#reset');
   const autoPlayEl = $('#autoplay');
 
-  if(!modeSel || !promptEl || !optsEl){
-    console.error('Init failed: DOM elements not found');
-    return;
-  }
-
-  // ===== State =====
   let correct=0,total=0,q=null,feedback='none';
-  function updateStats(){ scCorrectEl && (scCorrectEl.textContent=String(correct)); scTotalEl && (scTotalEl.textContent=String(total)); scAccEl && (scAccEl.textContent= total? Math.round(correct/total*100)+'%':'0%'); }
+  function updateStats(){ scCorrectEl.textContent=String(correct); scTotalEl.textContent=String(total); scAccEl.textContent= total? Math.round(correct/total*100)+'%':'0%'; }
 
   function renderQuestion(){
-    const pool=buildPool(modeSel.value);
+    const pool=buildPool(modeSel.value, levelSel.value);
     q=buildQuestion(pool);
     feedback='none';
     promptEl.textContent=q.prompt;
-    fbEl && (fbEl.textContent='');
-    if(autoPlayEl && autoPlayEl.checked){ playAudio(q.prompt); }
+    fbEl.textContent='';
+    if(autoPlayEl.checked){ playAudio(q.prompt); }
     optsEl.innerHTML='';
     q.options.forEach((opt,i)=>{
       const btn=document.createElement('button');
       btn.className='opt';
-      btn.innerHTML=`<span><span style="color:#9ca3af;margin-right:6px">${i+1}.</span>${opt}</span>`;
+      btn.innerHTML=`<span><span style=\"color:#9ca3af;margin-right:6px\">${i+1}.</span>${opt}</span>`;
       btn.addEventListener('click', ()=> choose(opt, btn));
       optsEl.appendChild(btn);
     });
@@ -153,24 +185,25 @@ window.addEventListener('DOMContentLoaded', () => {
     total++;
     if(opt===q.answer){
       correct++; feedback='right';
-      if(fbEl) fbEl.innerHTML = `<span class="ok">答對！（${q.prompt} → ${q.answer}）</span>`;
+      fbEl.innerHTML = `<span class=\"ok\">答對！（${q.prompt} → ${q.answer}）</span>`;
       btn.classList.add('good');
       playAudio(q.prompt);
     } else {
       feedback='wrong';
-      if(fbEl) fbEl.innerHTML = '<span class="ng">答錯，再試一次</span>';
+      fbEl.innerHTML = '<span class=\"ng\">答錯，再試一次</span>';
       btn.classList.add('bad');
     }
     updateStats();
   }
 
-  // ===== Events =====
-  btnSpeak && btnSpeak.addEventListener('click', ()=> q && playAudio(q.prompt));
-  btnTest && btnTest.addEventListener('click', ()=> q && playAudio(q.prompt));
-  btnNext && btnNext.addEventListener('click', renderQuestion);
-  btnReshuffle && btnReshuffle.addEventListener('click', renderQuestion);
-  btnReset && btnReset.addEventListener('click', ()=>{ correct=0; total=0; updateStats(); renderQuestion(); });
+  btnSpeak.addEventListener('click', ()=> q && playAudio(q.prompt));
+  btnTest.addEventListener('click', ()=> q && playAudio(q.prompt));
+  btnNext.addEventListener('click', renderQuestion);
+  btnReshuffle.addEventListener('click', renderQuestion);
+  btnReset.addEventListener('click', ()=>{ correct=0; total=0; updateStats(); renderQuestion(); });
   modeSel.addEventListener('change', renderQuestion);
+  datasetSel && datasetSel.addEventListener('change', ()=>{ correct=0; total=0; updateStats(); renderQuestion(); });
+  levelSel.addEventListener('change', renderQuestion);
 
   window.addEventListener('keydown', (e)=>{
     const idx = parseInt(e.key,10);
