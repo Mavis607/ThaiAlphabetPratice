@@ -47,11 +47,6 @@
   </div>
 
   <div class="prompt" id="prompt">ก</div>
-  <!--<div class="audio">
-    <button id="speak">🔊 發音</button>
-    <button id="testVoice">🧪 測試音頻（當前字母）</button>
-    <label><input type="checkbox" id="autoplay" /> 自動播放</label>
-  </div>-->
 
   <div class="options" id="options"></div>
   <div class="feedback" id="fb"></div>
@@ -68,7 +63,7 @@ window.addEventListener('DOMContentLoaded', () => {
     { ch: "ก", rtgs: "g" }, { ch: "ข", rtgs: "k" }, { ch: "ค", rtgs: "k" },
     { ch: "ง", rtgs: "ng" }, { ch: "จ", rtgs: "j" }, { ch: "ช", rtgs: "ch" },
     { ch: "ซ", rtgs: "s" }, { ch: "ญ", rtgs: "y" }, { ch: "ด", rtgs: "d" },
-    { ch: "ต", rtgs: "dt" }, { ch: "ถ", rtgs: "th" }, { ch: "ท", rtgs: "t" },
+    { ch: "ต", rtgs: "dt" }, { ch: "ถ", rtgs: "t" }, { ch: "ท", rtgs: "t" },
     { ch: "น", rtgs: "n" }, { ch: "บ", rtgs: "b" }, { ch: "ป", rtgs: "bp" },
     { ch: "ผ", rtgs: "p" }, { ch: "ฝ", rtgs: "f" }, { ch: "พ", rtgs: "p" },
     { ch: "ฟ", rtgs: "f" }, { ch: "ม", rtgs: "m" }, { ch: "ย", rtgs: "y" },
@@ -134,7 +129,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // ===== Audio =====
  const player = new Audio();
-  //player.preload = 'auto';
   function playAudio(ch){
    if(!ch) return;
    try { player.pause(); player.currentTime = 0; } catch(e){}
@@ -152,12 +146,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const scCorrectEl = $('#sc-correct');
   const scTotalEl = $('#sc-total');
   const scAccEl = $('#sc-acc');
-  //const btnSpeak = $('#speak');
-  //const btnTest = $('#testVoice');
   const btnNext = $('#next');
   const btnReshuffle = $('#reshuffle');
   const btnReset = $('#reset');
-  //const autoPlayEl = $('#autoplay');
+ 
 
   let correct=0,total=0,q=null,feedback='none';
   function updateStats(){ scCorrectEl.textContent=String(correct); scTotalEl.textContent=String(total); scAccEl.textContent= total? Math.round(correct/total*100)+'%':'0%'; }
@@ -196,8 +188,6 @@ window.addEventListener('DOMContentLoaded', () => {
     updateStats();
   }
 
-  //btnSpeak.addEventListener('click', ()=> q && playAudio(q.prompt));
-  //btnTest.addEventListener('click', ()=> q && playAudio(q.prompt));
   btnNext.addEventListener('click', renderQuestion);
   btnReshuffle.addEventListener('click', renderQuestion);
   btnReset.addEventListener('click', ()=>{ correct=0; total=0; updateStats(); renderQuestion(); });
@@ -217,7 +207,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderQuestion();
 });
 </script>
-  <footer style="margin-top:40px; font-size:12px; text-align:center; color:#64748b;">
+  <footer style="margin-top:40px; font-size:18px; text-align:center; color:#64748b;">
     本網站僅供學習使用，無任何商業用途。
   </footer>
 </body>
