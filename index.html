@@ -133,11 +133,11 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===== Audio =====
-  const player = new Audio();
-  player.preload = 'auto';
+ const player = new Audio();
+  //player.preload = 'auto';
   function playAudio(ch){
-    if(!ch) return;
-    try { player.pause(); player.currentTime = 0; } catch(e){}
+   if(!ch) return;
+   try { player.pause(); player.currentTime = 0; } catch(e){}
     player.src = `sounds/${encodeURIComponent(ch)}.mp3`;
     player.play().catch(()=>{});
   }
@@ -152,12 +152,12 @@ window.addEventListener('DOMContentLoaded', () => {
   const scCorrectEl = $('#sc-correct');
   const scTotalEl = $('#sc-total');
   const scAccEl = $('#sc-acc');
-  const btnSpeak = $('#speak');
-  const btnTest = $('#testVoice');
+  //const btnSpeak = $('#speak');
+  //const btnTest = $('#testVoice');
   const btnNext = $('#next');
   const btnReshuffle = $('#reshuffle');
   const btnReset = $('#reset');
-  const autoPlayEl = $('#autoplay');
+  //const autoPlayEl = $('#autoplay');
 
   let correct=0,total=0,q=null,feedback='none';
   function updateStats(){ scCorrectEl.textContent=String(correct); scTotalEl.textContent=String(total); scAccEl.textContent= total? Math.round(correct/total*100)+'%':'0%'; }
@@ -168,7 +168,7 @@ window.addEventListener('DOMContentLoaded', () => {
     feedback='none';
     promptEl.textContent=q.prompt;
     fbEl.textContent='';
-    if(autoPlayEl.checked){ playAudio(q.prompt); }
+    //if(autoPlayEl.checked){ playAudio(q.prompt); }
     optsEl.innerHTML='';
     q.options.forEach((opt,i)=>{
       const btn=document.createElement('button');
@@ -196,8 +196,8 @@ window.addEventListener('DOMContentLoaded', () => {
     updateStats();
   }
 
-  btnSpeak.addEventListener('click', ()=> q && playAudio(q.prompt));
-  btnTest.addEventListener('click', ()=> q && playAudio(q.prompt));
+  //btnSpeak.addEventListener('click', ()=> q && playAudio(q.prompt));
+  //btnTest.addEventListener('click', ()=> q && playAudio(q.prompt));
   btnNext.addEventListener('click', renderQuestion);
   btnReshuffle.addEventListener('click', renderQuestion);
   btnReset.addEventListener('click', ()=>{ correct=0; total=0; updateStats(); renderQuestion(); });
